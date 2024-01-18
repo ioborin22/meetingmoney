@@ -1,5 +1,5 @@
 <template>
-    <div class="shadow-lg border border-gray-200 rounded-lg">
+    <div class="shadow-lg rounded-lg mb-4">
 
         <!-- Tabs for switching -->
         <div class="flex p-2 space-x-1 bg-white" role="tablist">
@@ -21,39 +21,80 @@
         <div v-show="tab === 'buy'" class="p-4 bg-white">
             <div class="flex space-x-2">
                 <input class="flex-1 form-input" type="text" placeholder="Количество"/>
-                <select class="form-select">
-                    <option>PayPal</option>
-                    <!-- Здесь можно добавить дополнительные опции -->
+
+                <!-- Выпадающий список для выбора платежной системы -->
+                <select class="form-select" v-model="selectedPaymentSystem">
+                    <optgroup label="Криптовалюты" v-if="paymentOptions.cryptocurrencies">
+                        <option v-for="(supportsCurrency, crypto) in paymentOptions.cryptocurrencies" :key="crypto">
+                            {{ crypto }}
+                        </option>
+                    </optgroup>
+                    <optgroup label="Банки" v-if="paymentOptions.banks">
+                        <option v-for="(supportsCurrency, bank) in paymentOptions.banks" :key="bank">
+                            {{ bank }}
+                        </option>
+                    </optgroup>
+                    <optgroup label="Платежные системы" v-if="paymentOptions.paymentSystems">
+                        <option v-for="(supportsCurrency, system) in paymentOptions.paymentSystems" :key="system">
+                            {{ system }}
+                        </option>
+                    </optgroup>
+                    <optgroup label="Денежные переводы" v-if="paymentOptions.moneyTransfers">
+                        <option v-for="(supportsCurrency, transfer) in paymentOptions.moneyTransfers" :key="transfer">
+                            {{ transfer }}
+                        </option>
+                    </optgroup>
                 </select>
-                <select class="form-select">
-                    <option>RUB</option>
-                    <!-- Здесь можно добавить дополнительные валюты -->
+
+                <!-- Выпадающий список для выбора валюты -->
+                <select class="form-select" v-if="shouldShowCurrency()">
+                    <option v-for="(name, code) in availableCurrencies" :key="code" :value="code">
+                        {{ code }}
+                    </option>
                 </select>
-                <select class="form-select">
-                    <option>Русский</option>
-                    <!-- Здесь можно добавить дополнительные языки -->
-                </select>
-                <button class="btn btn-primary">ПОИСК</button>
+
+                <button class="bg-blue-500 text-white p-2">ПОИСК</button>
             </div>
         </div>
+
 
         <!-- Content for SELL tab -->
         <div v-show="tab === 'sell'" class="p-4 bg-white">
             <div class="flex space-x-2">
                 <input class="flex-1 form-input" type="text" placeholder="Количество"/>
-                <select class="form-select">
-                    <option>BTC</option>
-                    <!-- Здесь можно добавить дополнительные опции -->
+
+                <!-- Выпадающий список для выбора платежной системы -->
+                <select class="form-select" v-model="selectedPaymentSystem">
+                    <optgroup label="Криптовалюты" v-if="paymentOptions.cryptocurrencies">
+                        <option v-for="(supportsCurrency, crypto) in paymentOptions.cryptocurrencies" :key="crypto">
+                            {{ crypto }}
+                        </option>
+                    </optgroup>
+                    <optgroup label="Банки" v-if="paymentOptions.banks">
+                        <option v-for="(supportsCurrency, bank) in paymentOptions.banks" :key="bank">
+                            {{ bank }}
+                        </option>
+                    </optgroup>
+                    <optgroup label="Платежные системы" v-if="paymentOptions.paymentSystems">
+                        <option v-for="(supportsCurrency, system) in paymentOptions.paymentSystems" :key="system">
+                            {{ system }}
+                        </option>
+                    </optgroup>
+                    <optgroup label="Денежные переводы" v-if="paymentOptions.moneyTransfers">
+                        <option v-for="(supportsCurrency, transfer) in paymentOptions.moneyTransfers" :key="transfer">
+                            {{ transfer }}
+                        </option>
+                    </optgroup>
                 </select>
-                <select class="form-select">
-                    <option>RUB</option>
-                    <!-- Здесь можно добавить дополнительные валюты -->
+
+                <!-- Выпадающий список для выбора валюты -->
+                <select class="form-select" v-if="shouldShowCurrency()">
+                    <option v-for="(name, code) in availableCurrencies" :key="code" :value="code">
+                        {{ code }}
+                    </option>
                 </select>
-                <select class="form-select">
-                    <option>Русский</option>
-                    <!-- Здесь можно добавить дополнительные языки -->
-                </select>
-                <button class="btn btn-primary">ПОИСК</button>
+
+                <button class="bg-blue-500 text-white p-2">ПОИСК</button>
             </div>
         </div>
 
@@ -61,18 +102,46 @@
 </template>
 
 <script>
+import paymentOptions from '../data/payments';
+import currencies from '../data/currencies';
+
 export default {
     data() {
         return {
-            tab: 'buy', // Default tab
+            tab: 'buy', // Текущая вкладка
+            selectedPaymentSystem: null, // Выбранная платежная система
+            paymentOptions: paymentOptions, // Опции платежных систем
+            availableCurrencies: currencies, // Доступные валюты
         };
     },
+    mounted() {
+        this.setDefaultPaymentSystem();
+    },
+    methods: {
+        // Установка первой платежной системы по умолчанию
+        setDefaultPaymentSystem() {
+            for (let category in this.paymentOptions) {
+                for (let system in this.paymentOptions[category]) {
+                    this.selectedPaymentSystem = system;
+                    return; // Выходим из цикла после установки первой системы
+                }
+            }
+        },
+        // Определяем, должен ли отображаться выбор валюты
+        shouldShowCurrency() {
+            if (!this.selectedPaymentSystem) return false;
+            for (let category in this.paymentOptions) {
+                if (this.paymentOptions[category][this.selectedPaymentSystem]) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
 };
 </script>
 
+
 <style>
-/* Your styles here */
-.btn-primary {
-    @apply bg-blue-500 text-white p-2;
-}
+
 </style>
