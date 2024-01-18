@@ -17,7 +17,9 @@ class UserRatingFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'user_id' => \App\Models\User::factory(), // Предполагается, что у вас есть UserFactory
+            'rating' => $this->faker->randomElement(['+', '-']), // Тип отзыва
+            'comment' => $this->faker->optional()->sentence, // Случайный комментарий, иногда может быть null
         ];
     }
 }

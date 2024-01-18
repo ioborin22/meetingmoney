@@ -13,8 +13,20 @@ return new class extends Migration
     {
         Schema::create('user_ratings', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('user_id');
+            $table->string('rating'); // Тип отзыва: +, -
+            $table->string('comment')->nullable();
             $table->timestamps();
+
+            // Добавление внешнего ключа, который ссылается на таблицу users
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+
+            // Добавление индексов
+            $table->index('user_id');
+            $table->index('rating');
+            $table->index('comment');
         });
+
     }
 
     /**
