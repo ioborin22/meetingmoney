@@ -1,100 +1,82 @@
 <template>
-    <div class="shadow-lg rounded-lg mb-4">
-
-        <!-- Tabs for switching -->
-        <div class="flex p-2 space-x-1 bg-white" role="tablist">
+    <div class="shadow-lg rounded-sm mb-4 bg-white">
+        <!-- ТАБы -->
+        <div class="flex p-2" role="tablist">
             <button
-                class="w-full p-2 text-black-500 border-b-4 border-transparent hover:border-white focus:border-blue-500"
-                :class="{'border-blue-500 bg-white': tab === 'buy'}"
+                class="w-full p-2"
+                :class="{'border-b-2 border-blue-500': tab === 'buy'}"
                 @click="tab = 'buy'">
-                ПОКУПКА
+                КУПИТЬ
             </button>
             <button
-                class="w-full p-2 text-black-500 border-b-4 border-transparent hover:border-white focus:border-blue-500"
-                :class="{'border-blue-500 bg-white': tab === 'sell'}"
+                class="w-full p-2"
+                :class="{'border-b-2 border-blue-500': tab === 'sell'}"
                 @click="tab = 'sell'">
-                ПРОДАЖА
+                ПРОДАТЬ
             </button>
         </div>
+        <!-- КУПИТЬ -->
+        <div v-show="tab === 'buy'" class="p-4">
+            <!-- Ввод суммы -->
+            <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
+                <div class="relative">
+                    <input class="form-input rounded-sm" type="text" placeholder="Сумма" v-model="inputAmount" @input="validateAmount"/>
+                    <div v-if="inputAmount" class="absolute inset-y-0 right-0 pr-3 flex items-center">
+                        <button @click="clearAmount" class="text-gray-500 hover:text-gray-700">&#x2715;</button>
+                    </div>
+                    <p v-if="inputAmountError" class="absolute p-2 z-10 w-full bg-white border border-gray-300 rounded-sm mt-1 max-h-60 overflow-auto text-red-500">Введите сумму</p>
+                </div>
 
-        <!-- Content for BUY tab -->
-        <div v-show="tab === 'buy'" class="p-4 bg-white">
-            <div class="flex space-x-2">
-                <input class="flex-1 form-input" type="text" placeholder="Количество"/>
-
-                <!-- Выпадающий список для выбора платежной системы -->
-                <select class="form-select" v-model="selectedPaymentSystem">
-                    <optgroup label="Криптовалюты" v-if="paymentOptions.cryptocurrencies">
-                        <option v-for="(supportsCurrency, crypto) in paymentOptions.cryptocurrencies" :key="crypto">
-                            {{ crypto }}
-                        </option>
-                    </optgroup>
-                    <optgroup label="Банки" v-if="paymentOptions.banks">
-                        <option v-for="(supportsCurrency, bank) in paymentOptions.banks" :key="bank">
-                            {{ bank }}
-                        </option>
-                    </optgroup>
-                    <optgroup label="Платежные системы" v-if="paymentOptions.paymentSystems">
-                        <option v-for="(supportsCurrency, system) in paymentOptions.paymentSystems" :key="system">
-                            {{ system }}
-                        </option>
-                    </optgroup>
-                    <optgroup label="Денежные переводы" v-if="paymentOptions.moneyTransfers">
-                        <option v-for="(supportsCurrency, transfer) in paymentOptions.moneyTransfers" :key="transfer">
-                            {{ transfer }}
-                        </option>
-                    </optgroup>
+                <!-- Ввод токена -->
+                <div class="relative">
+                    <input class="w-full p-2 rounded-sm focus:border-blue-500 focus:outline-none" type="text" v-model="searchToken" @input="inputToken" placeholder="Введите токен"/>
+                    <p v-if="tokenInputError" class="absolute p-2 z-10 w-full bg-white border border-gray-300 rounded-sm mt-1 max-h-60 overflow-auto text-red-500">Введите токен</p>
+                    <div v-if="searchToken" class="absolute inset-y-0 right-0 pr-3 flex items-center">
+                        <button @click="clearToken" class="text-gray-500 hover:text-gray-700">&#x2715;</button>
+                    </div>
+                    <ul v-if="filteredToken.length" class="absolute z-10 w-full bg-white border border-gray-300 rounded-sm mt-1 max-h-60 overflow-auto">
+                        <li v-for="token in filteredToken" :key="token" @click="selectToken(token)" class="p-2 hover:bg-blue-500 hover:text-white cursor-pointer">{{ token }}</li>
+                    </ul>
+                    <p v-if="filteredToken.length === 0 && searchToken && !selectedToken" class="absolute p-2 z-10 w-full bg-white border border-gray-300 rounded-sm mt-1 max-h-60 overflow-auto text-red-500">Нет такого токена</p>
+                </div>
+                <!-- Список валюты -->
+                <select class="form-select rounded-sm" v-if="shouldShowCurrency()" v-model="selectedCurrency">
+                    <option v-for="(name, code) in availableCurrencies" :key="code" :value="code">{{ code }}</option>
                 </select>
-
-                <!-- Выпадающий список для выбора валюты -->
-                <select class="form-select" v-if="shouldShowCurrency()">
-                    <option v-for="(name, code) in availableCurrencies" :key="code" :value="code">
-                        {{ code }}
-                    </option>
-                </select>
-
-                <button class="bg-blue-500 text-white p-2">ПОИСК</button>
+                <!-- Кнопка ПОИСК -->
+                <button class="btn bg-blue-500 text-white p-2 rounded-sm search-button" @click="performSearch">ПОИСК</button>
             </div>
         </div>
 
+        <!-- ПРОДАТЬ -->
+        <div v-show="tab === 'sell'" class="p-4">
+            <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
+                <div class="relative">
+                    <input class="form-input rounded-sm" type="text" placeholder="Сумма" v-model="inputAmount" @input="validateAmount"/>
+                    <div v-if="inputAmount" class="absolute inset-y-0 right-0 pr-3 flex items-center">
+                        <button @click="clearAmount" class="text-gray-500 hover:text-gray-700">&#x2715;</button>
+                    </div>
+                    <p v-if="inputAmountError" class="absolute p-2 z-10 w-full bg-white border border-gray-300 rounded-sm mt-1 max-h-60 overflow-auto text-red-500">Введите сумму</p>
+                </div>
 
-        <!-- Content for SELL tab -->
-        <div v-show="tab === 'sell'" class="p-4 bg-white">
-            <div class="flex space-x-2">
-                <input class="flex-1 form-input" type="text" placeholder="Количество"/>
-
-                <!-- Выпадающий список для выбора платежной системы -->
-                <select class="form-select" v-model="selectedPaymentSystem">
-                    <optgroup label="Криптовалюты" v-if="paymentOptions.cryptocurrencies">
-                        <option v-for="(supportsCurrency, crypto) in paymentOptions.cryptocurrencies" :key="crypto">
-                            {{ crypto }}
-                        </option>
-                    </optgroup>
-                    <optgroup label="Банки" v-if="paymentOptions.banks">
-                        <option v-for="(supportsCurrency, bank) in paymentOptions.banks" :key="bank">
-                            {{ bank }}
-                        </option>
-                    </optgroup>
-                    <optgroup label="Платежные системы" v-if="paymentOptions.paymentSystems">
-                        <option v-for="(supportsCurrency, system) in paymentOptions.paymentSystems" :key="system">
-                            {{ system }}
-                        </option>
-                    </optgroup>
-                    <optgroup label="Денежные переводы" v-if="paymentOptions.moneyTransfers">
-                        <option v-for="(supportsCurrency, transfer) in paymentOptions.moneyTransfers" :key="transfer">
-                            {{ transfer }}
-                        </option>
-                    </optgroup>
+                <!-- Ввод токена -->
+                <div class="relative">
+                    <input class="w-full p-2 rounded-sm focus:border-blue-500 focus:outline-none" type="text" v-model="searchToken" @input="inputToken" placeholder="Введите токен"/>
+                    <p v-if="tokenInputError" class="absolute p-2 z-10 w-full bg-white border border-gray-300 rounded-sm mt-1 max-h-60 overflow-auto text-red-500">Введите токен</p>
+                    <div v-if="searchToken" class="absolute inset-y-0 right-0 pr-3 flex items-center">
+                        <button @click="clearToken" class="text-gray-500 hover:text-gray-700">&#x2715;</button>
+                    </div>
+                    <ul v-if="filteredToken.length" class="absolute z-10 w-full bg-white border border-gray-300 rounded-sm mt-1 max-h-60 overflow-auto">
+                        <li v-for="token in filteredToken" :key="token" @click="selectToken(token)" class="p-2 hover:bg-blue-500 hover:text-white cursor-pointer">{{ token }}</li>
+                    </ul>
+                    <p v-if="filteredToken.length === 0 && searchToken && !selectedToken" class="absolute p-2 z-10 w-full bg-white border border-gray-300 rounded-sm mt-1 max-h-60 overflow-auto text-red-500">Нет такого токена</p>
+                </div>
+                <!-- Список валюты -->
+                <select class="form-select rounded-sm" v-if="shouldShowCurrency()" v-model="selectedCurrency">
+                    <option v-for="(name, code) in availableCurrencies" :key="code" :value="code">{{ code }}</option>
                 </select>
-
-                <!-- Выпадающий список для выбора валюты -->
-                <select class="form-select" v-if="shouldShowCurrency()">
-                    <option v-for="(name, code) in availableCurrencies" :key="code" :value="code">
-                        {{ code }}
-                    </option>
-                </select>
-
-                <button class="bg-blue-500 text-white p-2">ПОИСК</button>
+                <!-- Кнопка ПОИСК -->
+                <button class="btn bg-blue-500 text-white p-2 rounded-sm search-button" @click="performSearch">ПОИСК</button>
             </div>
         </div>
 
@@ -102,40 +84,131 @@
 </template>
 
 <script>
-import paymentOptions from '../data/payments';
+
+import tokens from '../data/tokens';
 import currencies from '../data/currencies';
 
 export default {
     data() {
         return {
             tab: 'buy', // Текущая вкладка
-            selectedPaymentSystem: null, // Выбранная платежная система
-            paymentOptions: paymentOptions, // Опции платежных систем
+            inputAmount: '',
+            selectedTokenSystem: '', // Выбранная платежная система
+            selectedCurrency: '',
+            tokens: tokens, // Опции платежных систем
             availableCurrencies: currencies, // Доступные валюты
+            allTokens: this.createTokenList(tokens),
+            filteredToken: [],
+            searchToken: '',
+            selectedToken: '',
+            inputAmountError: false,
+            tokenInputError: false,
         };
     },
     mounted() {
         this.setDefaultPaymentSystem();
+        this.setDefaultCurrency();
+        document.addEventListener('click', this.handleGlobalClick);
+
     },
     methods: {
+        validateAmount() {
+            if (this.inputAmount === '') {
+                this.inputAmountError = true;
+            } else {
+                this.inputAmountError = false;
+                this.inputAmount = this.inputAmount.replace(/[^0-9.,]/g, '').replace(/(\..*)\./g, '$1');
+            }
+        },
+        beforeDestroy() {
+            document.removeEventListener('click', this.handleGlobalClick);
+        },
+        handleGlobalClick(event) {
+            if (!event.target.classList.contains('search-button')) {
+                this.inputAmountError = false;
+                this.tokenInputError = false;
+            }
+        },
+        performSearch() {
+            let hasError = false;
+
+            if (this.inputAmount === '') {
+                this.inputAmountError = true;
+                hasError = true;
+            } else {
+                this.inputAmountError = false;
+            }
+
+            if (this.searchToken === '') {
+                this.tokenInputError = true;
+                hasError = true;
+            } else {
+                this.tokenInputError = false;
+            }
+
+            if (!hasError) {
+                // Логика поиска
+                console.log(
+                    'Поиск с параметрами:',
+                    'действие:', this.tab,
+                    'сумма:',this.inputAmount,
+                    'токен:', this.selectedToken,
+                    'валюта:', this.selectedCurrency);
+            }
+
+        },
         // Установка первой платежной системы по умолчанию
         setDefaultPaymentSystem() {
-            for (let category in this.paymentOptions) {
-                for (let system in this.paymentOptions[category]) {
-                    this.selectedPaymentSystem = system;
+            for (let category in this.tokens) {
+                for (let system in this.tokens[category]) {
+                    this.selectedTokenSystem = system;
                     return; // Выходим из цикла после установки первой системы
                 }
             }
         },
+        // Установка первой валюты по умолчанию
+        setDefaultCurrency() {
+            const currencyKeys = Object.keys(this.availableCurrencies);
+            if (currencyKeys.length > 0) {
+                this.selectedCurrency = currencyKeys[0];
+            }
+        },
         // Определяем, должен ли отображаться выбор валюты
         shouldShowCurrency() {
-            if (!this.selectedPaymentSystem) return false;
-            for (let category in this.paymentOptions) {
-                if (this.paymentOptions[category][this.selectedPaymentSystem]) {
+            for (let category in this.tokens) {
+                if (this.tokens[category][this.selectedToken]) {
                     return true;
                 }
             }
             return false;
+        },
+        createTokenList(tokens) {
+            // Преобразует ваш объект tokens в массив строк
+            return Object.values(tokens ).flatMap(category =>
+                Object.keys(category));
+        },
+        inputToken() {
+            if (this.searchToken) {
+                this.filteredToken = this.allTokens.filter(token =>
+                    token.toLowerCase().includes(this.searchToken.toLowerCase()));
+                this.selectedToken = null; // Сбросить выбранную опцию
+            } else {
+                this.filteredToken = [];
+            }
+        },
+        clearAmount() {
+            this.inputAmount = '';
+            this.inputAmountError = false;
+        },
+        clearToken() {
+            this.searchToken = '';
+            this.selectedToken = null;
+            this.filteredToken = [];
+        },
+        selectToken(token) {
+            this.searchToken = token;
+            this.selectedToken = token;
+            this.filteredToken = [];
         }
     }
 };

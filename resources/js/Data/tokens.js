@@ -24,6 +24,9 @@ const paymentOptions = {
         "Ria Money Transfer": true,
         // Другие системы денежных переводов...
     },
+    "cash": {
+        "Cash": true,
+    },
 };
 
 export default paymentOptions;
