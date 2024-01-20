@@ -26,7 +26,7 @@ const props = defineProps({
 </script>
 
 <template>
-    <Head title="Welcome" />
+    <Head title="MeetingMoney" />
 
     <div class="relative sm:flex sm:justify-center sm:items-center min-h-screen bg-center bg-gray-100 dark:bg-gray-900 selection:bg-blue-500 selection:text-white">
 
@@ -41,7 +41,11 @@ const props = defineProps({
             </template>
         </div>
 
-        <SearchBar/>
+        <!-- Основной контент -->
+        <div class="w-full max-w-3xl mx-auto text-center p-4">
+            <h1 class="text-2xl font-bold mb-4">{{__('Smart people make money here')}}</h1>
+            <SearchBar/>
+        </div>
     </div>
 </template>
 

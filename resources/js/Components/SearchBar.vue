@@ -78,6 +78,11 @@
             </div>
         </div>
 
+        <!-- РЕЗУЛЬТАТ ДЛЯ ВИДИМОСТИ -->
+        <div v-show="searchResults"  class="bg-gray-300 p-4">
+            {{ searchResults }}
+        </div>
+
     </div>
 </template>
 
@@ -87,26 +92,34 @@ import tokens from '../data/tokens';
 import currencies from '../data/currencies';
 
 export default {
+    // Данные компонента
     data() {
         return {
-            tab: 'buy', // Текущая вкладка
-            amount: '', // Сумма
-            token: '', // Токен
-            currency: '', // Валюта
-            tokens: tokens, // Опции платежных систем
-            availableCurrencies: currencies, // Доступные валюты
-            allTokens: this.createTokenList(tokens),
-            filteredToken: [],
-            selectedToken: '',
-            validateAmountError: false,
-            validateTokenError: false,
+            tab: 'buy', // Текущая вкладка (Купить/Продать)
+            amount: '', // Сумма для транзакции
+            token: '', // Выбранный токен
+            currency: '', // Выбранная валюта
+            tokens: tokens, // Список всех токенов
+            availableCurrencies: currencies, // Список доступных валют
+            allTokens: this.createTokenList(tokens), // Список всех токенов для отображения
+            filteredToken: [], // Отфильтрованный список токенов
+            selectedToken: '', // Выбранный токен из списка
+            validateAmountError: false, // Состояние ошибки для поля суммы
+            validateTokenError: false, // Состояние ошибки для поля токена
+            searchResults: '', // Для хранения результатов поиска
+
         };
     },
+
+    // Вызывается после монтирования компонента
     mounted() {
-        this.setDefaultCurrency();
-        document.addEventListener('click', this.handleGlobalClick);
+        this.setDefaultCurrency(); // Установка начальной валюты
+        document.addEventListener('click', this.handleGlobalClick); // Добавление глобального обработчика клика
     },
+
+    // Методы компонента
     methods: {
+        // Валидация поля суммы
         validateAmount() {
             if (this.amount === '') {
                 this.validateAmountError = true;
@@ -115,15 +128,21 @@ export default {
                 this.amount = this.amount.replace(/[^0-9.,]/g, '').replace(/(\..*)\./g, '$1');
             }
         },
+
+        // Вызывается перед уничтожением компонента
         beforeDestroy() {
-            document.removeEventListener('click', this.handleGlobalClick);
+            document.removeEventListener('click', this.handleGlobalClick); // Удаление глобального обработчика клика
         },
+
+        // Обработчик глобального клика
         handleGlobalClick(event) {
             if (!event.target.classList.contains('search-button')) {
                 this.validateAmountError = false;
                 this.validateTokenError = false;
             }
         },
+
+        // Логика выполнения поиска
         performSearch() {
             let hasError = false;
 
@@ -145,7 +164,7 @@ export default {
                 // Проверяем, нужно ли показывать валюту
                 let currency = this.shouldShowCurrency() ? this.currency : null;
 
-                // Логика поиска
+                // Вывод информации о поиске в консоль
                 console.log(
                     'Поиск с параметрами:',
                     'действие:', this.tab,
@@ -154,16 +173,21 @@ export default {
                     'валюта:', currency
                 );
             }
-
+            if (!hasError) {
+                let currency = this.shouldShowCurrency() ? this.currency : null;
+                this.searchResults = `Поиск с параметрами: действие: ${this.tab}, сумма: ${this.amount}, токен: ${this.selectedToken}, валюта: ${currency}`;
+            }
         },
-        // Установка первой валюты по умолчанию
+
+        // Установка начальной валюты
         setDefaultCurrency() {
             const currencyKeys = Object.keys(this.availableCurrencies);
             if (currencyKeys.length > 0) {
                 this.currency = currencyKeys[0];
             }
         },
-        // Определяем, должен ли отображаться выбор валюты
+
+        // Проверка, должна ли отображаться валюта
         shouldShowCurrency() {
             for (let category in this.tokens) {
                 if (this.tokens[category][this.selectedToken]) {
@@ -172,29 +196,37 @@ export default {
             }
             return false;
         },
+
+        // Создание списка всех токенов
         createTokenList(tokens) {
-            // Преобразует ваш объект tokens в массив строк
-            return Object.values(tokens ).flatMap(category =>
-                Object.keys(category));
+            return Object.values(tokens).flatMap(category => Object.keys(category));
         },
+
+        // Валидация ввода токена
         validateToken() {
             if (this.token) {
                 this.filteredToken = this.allTokens.filter(token =>
                     token.toLowerCase().includes(this.token.toLowerCase()));
-                this.selectedToken = null; // Сбросить выбранную опцию
+                this.selectedToken = null;
             } else {
                 this.filteredToken = [];
             }
         },
+
+        // Очистка поля суммы
         clearAmount() {
             this.amount = '';
             this.validateAmountError = false;
         },
+
+        // Очистка поля токена
         clearToken() {
             this.token = '';
             this.selectedToken = null;
             this.filteredToken = [];
         },
+
+        // Выбор токена из списка
         selectToken(token) {
             this.token = token;
             this.selectedToken = token;
@@ -203,7 +235,6 @@ export default {
     }
 };
 </script>
-
 
 <style>
 
