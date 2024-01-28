@@ -3,6 +3,7 @@ import { ref, onMounted } from 'vue';
 import axios from 'axios';
 import { Head, Link } from '@inertiajs/vue3';
 import SearchBar from '@/Components/SearchBar.vue';
+import OfferListing from "@/Components/OfferListing.vue";
 
 const offerListing = ref([]);
 
@@ -14,6 +15,7 @@ function fetchOfferListing() {
     axios.get('/api/offer-listing')
         .then(response => offerListing.value = response.data)
         .catch(error => console.log(error));
+    console.log(offerListing)
 }
 
 // Если вам нужно определить props
@@ -23,6 +25,7 @@ const props = defineProps({
     laravelVersion: String,
     phpVersion: String,
 });
+
 </script>
 
 
@@ -69,8 +72,11 @@ const props = defineProps({
         <main class="flex-grow p-4">
             <div class="w-full max-w-xl mx-auto p-4">
                 <h1 class="text-center text-2xl font-bold mb-4">Smart people make money here</h1>
+
                 <SearchBar/>
             </div>
+
+            <OfferListing :offerListing="offerListing" />
         </main>
 
         <!-- Подвал -->

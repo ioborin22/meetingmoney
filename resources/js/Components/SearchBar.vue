@@ -43,7 +43,7 @@
                     <option v-for="(name, code) in availableCurrencies" :key="code" :value="code">{{ code }}</option>
                 </select>
                 <!-- ПОИСК -->
-                <button class="btn bg-primary-blue text-white p-2 rounded-sm search-button" @click="performSearch">SEARCH</button>
+                <button class="btn bg-primary-blue text-white p-2 rounded-sm search-button hover:bg-secondary-blue" @click="performSearch">SEARCH</button>
             </div>
         </div>
         <!-- ПРОДАТЬ -->
@@ -74,7 +74,7 @@
                     <option v-for="(name, code) in availableCurrencies" :key="code" :value="code">{{ code }}</option>
                 </select>
                 <!-- ПОИСК -->
-                <button class="btn bg-primary-blue text-white p-2 rounded-sm search-button" @click="performSearch">SEARCH</button>
+                <button class="btn bg-primary-blue text-white p-2 rounded-sm search-button hover:bg-secondary-blue" @click="performSearch">SEARCH</button>
             </div>
         </div>
 

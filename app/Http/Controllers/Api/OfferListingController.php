@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 
 class OfferListingController extends Controller
 {
-    public function index()
+    public function index(): \Illuminate\Database\Eloquent\Collection|array
     {
         return OfferListing::with(['user' => function ($query) {
             $query->withCount(['ratings as positive' => function ($query) {
