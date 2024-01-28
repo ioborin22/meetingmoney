@@ -4,13 +4,13 @@
         <div class="flex p-2" role="tablist">
             <button
                 class="w-full p-2"
-                :class="{'border-b-2 border-blue-500': tab === 'buy'}"
+                :class="{'border-b-2 border-button-color': tab === 'buy'}"
                 @click="tab = 'buy'">
                 BUY
             </button>
             <button
                 class="w-full p-2"
-                :class="{'border-b-2 border-blue-500': tab === 'sell'}"
+                :class="{'border-b-2 border-button-color': tab === 'sell'}"
                 @click="tab = 'sell'">
                 SELL
             </button>
@@ -43,7 +43,7 @@
                     <option v-for="(name, code) in availableCurrencies" :key="code" :value="code">{{ code }}</option>
                 </select>
                 <!-- ПОИСК -->
-                <button class="btn bg-blue-500 text-white p-2 rounded-sm search-button" @click="performSearch">SEARCH</button>
+                <button class="btn bg-button-color text-white p-2 rounded-sm search-button" @click="performSearch">SEARCH</button>
             </div>
         </div>
         <!-- ПРОДАТЬ -->
@@ -74,7 +74,7 @@
                     <option v-for="(name, code) in availableCurrencies" :key="code" :value="code">{{ code }}</option>
                 </select>
                 <!-- ПОИСК -->
-                <button class="btn bg-blue-500 text-white p-2 rounded-sm search-button" @click="performSearch">SEARCH</button>
+                <button class="btn bg-button-color text-white p-2 rounded-sm search-button" @click="performSearch">SEARCH</button>
             </div>
         </div>
 

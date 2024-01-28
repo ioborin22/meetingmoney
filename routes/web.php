@@ -33,3 +33,8 @@ Route::middleware([
         return Inertia::render('Dashboard');
     })->name('dashboard');
 });
+Route::get('/create-ad', function () {
+    // Возвращаем представление для создания объявления
+    // Возможно, здесь будет вызов контроллера в будущем
+    return view('create-ad');
+})->name('create-ad')->middleware('auth');

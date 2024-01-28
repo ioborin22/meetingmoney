@@ -15,7 +15,20 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['Figtree', ...defaultTheme.fontFamily.sans],
+                sans: ['Roboto', 'sans-serif'], // Добавляем 'Roboto' в качестве основного шрифта
+            },
+            textColor: {
+                DEFAULT: '#FF0000',
+            },
+            // Расширение существующих цветов
+            colors: {
+                'background-1': '#F4F4FA',
+                'background-2': '#FAFAFF',
+                'header-1': '#D8D8F4',
+                'header-2': '#E6E6F5',
+                'text-color': '#232330',
+                'button-color': '#2A8BF2',
+                'button-color-green': '#4CAF50',
             },
         },
     },
