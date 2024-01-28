@@ -1,21 +1,33 @@
 <template>
-    <div class="overflow-x-auto">
+    <div class="overflow-x-auto container mx-auto p-2 sm:p-6">
         <table class="min-w-full table-fixed bg-white">
             <!-- Заголовки столбцов -->
-            <thead class="bg-gray-100">
+            <thead class="bg-background-1">
             <tr>
-                <!-- Заголовок "Продавец" -->
-                <th class="w-1/4 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Продавец</th>
-                <!-- Заголовок "Рейтинг" -->
-                <th class="w-1/4 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Рейтинг</th>
-                <!-- Заголовок "Отдадите" -->
-                <th class="w-1/4 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Отдадите</th>
-                <!-- Заголовок "Получите" -->
-                <th class="w-1/4 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Получите</th>
-                <!-- Заголовок "Цена" -->
-                <th class="w-1/4 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Цена</th>
-                <!-- Заголовок "Мин. - Макс." -->
-                <th class="w-1/4 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Мин. - Макс.</th>
+                <!-- Заголовок "Продавец" как ссылка -->
+                <th class="w-1/4 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <a href="#" @click="sortBy('item.user.name')">Продавец</a>
+                </th>
+                <!-- Заголовок "Рейтинг" как ссылка -->
+                <th class="w-1/4 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <a href="#" @click="sortBy('user.rating')">Рейтинг</a>
+                </th>
+                <!-- Заголовок "Отдадите" как ссылка -->
+                <th class="w-1/4 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <a href="#" @click="sortBy('requested_token')">Отдадите</a>
+                </th>
+                <!-- Заголовок "Получите" как ссылка -->
+                <th class="w-1/4 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <a href="#" @click="sortBy('offered_token')">Получите</a>
+                </th>
+                <!-- Заголовок "Цена" как ссылка -->
+                <th class="w-1/4 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <a href="#" @click="sortBy('unit_price')">Цена</a>
+                </th>
+                <!-- Заголовок "Мин. - Макс." как ссылка -->
+                <th class="w-1/4 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <a href="#" @click="sortBy('total_price')">Мин. - Макс.</a>
+                </th>
                 <!-- Пустой заголовок для дополнительных действий -->
                 <th class="w-1/4 px-6 py-3"> </th>
             </tr>
@@ -23,7 +35,7 @@
             <!-- Данные о предложениях -->
             <tbody class="bg-white divide-y divide-gray-200">
             <!-- Пример строки с данными -->
-            <tr v-for="(item, index) in offerListing" :key="index" class="hover:bg-gray-100">
+            <tr v-for="(item, index) in offerListing" :key="index" class="hover:bg-background-1">
                 <!-- Ячейка с информацией о продавце -->
                 <td class="px-6 py-4 whitespace-nowrap">
                     <div class="flex items-center">
@@ -67,11 +79,49 @@
     </div>
 </template>
 
-<script setup>
-// Принимайте offerListing как пропс
-const props = defineProps({
-    offerListing: Array, // Предположим, что offerListing - это массив объектов
-});
+<script>
+export default {
+    props: {
+        offerListing: Array,
+    },
+    data() {
+        return {
+            sortByColumn: '', // Переменная для хранения выбранного столбца для сортировки
+            sortDirection: 'asc', // Переменная для хранения направления сортировки (asc или desc)
+        };
+    },
+    methods: {
+        sortBy(column) {
+            // Если выбранный столбец для сортировки совпадает с текущим, меняем направление сортировки
+            if (this.sortByColumn === column) {
+                this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+            } else {
+                // Если выбранный столбец отличается от текущего, сбрасываем направление сортировки
+                this.sortByColumn = column;
+                this.sortDirection = 'asc';
+            }
+
+            // Сортируем данные в соответствии с выбранным столбцом и направлением
+            this.offerListing.sort((a, b) => {
+                const aValue = a[column];
+                const bValue = b[column];
+
+                // В зависимости от типа данных в столбце, сравниваем их
+                if (typeof aValue === 'string' || typeof bValue === 'string') {
+                    // Сортировка строк
+                    return this.sortDirection === 'asc'
+                        ? aValue.localeCompare(bValue)
+                        : bValue.localeCompare(aValue);
+                } else {
+                    // Сортировка чисел
+                    return this.sortDirection === 'asc'
+                        ? aValue - bValue
+                        : bValue - aValue;
+                }
+            });
+        },
+    },
+};
 </script>
 
 <style scoped>
