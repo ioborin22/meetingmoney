@@ -30,15 +30,15 @@ const props = defineProps({
 <template>
     <Head title="MeetingMoney" />
 
-    <div class="flex flex-col min-h-screen selection:bg-blue-500">
+    <div class="flex flex-col min-h-screen selection:bg-primary-blue selection:text-white">
         <!-- Шапка -->
         <header class="bg-header-1 shadow-md">
             <div class="container mx-auto p-2 sm:p-6">
                 <!-- Логотип и навигация -->
                 <div class="flex justify-between items-center">
                     <div class="text-center tight-spacing">
-                        <h2 class="text-lg sm:text-xl text-text-color font-medium">MeetingMoney</h2>
-                        <span class="text-xs sm:text-sm text-text-color">profit conversations</span>
+                        <h2 class="text-lg sm:text-xl font-medium">MeetingMoney</h2>
+                        <span class="text-xs sm:text-sm">profit conversations</span>
                     </div>
 
 
@@ -46,17 +46,17 @@ const props = defineProps({
                     <div class="flex items-center">
                         <!-- Навигационные ссылки -->
                         <nav class="mr-6">
-                            <Link :href="route('create-ad')" class="text-xs sm:text-sm px-2 sm:px-2 py-1 sm:py-2 bg-button-color-green text-white rounded hover:bg-green-600">PLACE AN AD</Link>
+                            <Link :href="route('create-ad')" class="text-xs sm:text-sm px-2 sm:px-2 py-1 sm:py-2 bg-primary-green text-white rounded hover:bg-green-600">PLACE AN AD</Link>
                         </nav>
 
 
                         <!-- Разместить объявление/Вход -->
                         <div v-if="canLogin">
                             <template v-if="$page.props.auth.user">
-                                <Link :href="route('dashboard')" class="text-text-color hover:underline">Dashboard</Link>
+                                <Link :href="route('dashboard')" class="hover:underline">Dashboard</Link>
                             </template>
                             <template v-else>
-                                <Link :href="route('login')" class="text-xs sm:text-sm text-text-color hover:underline">SING IN</Link>
+                                <Link :href="route('login')" class="text-xs sm:text-sm hover:underline">SING IN</Link>
                                 <!--                        <Link v-if="canRegister" :href="route('register')" class="ms-4 font-semibold text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-blue-500">Register</Link>-->
                             </template>
                         </div>
@@ -67,8 +67,8 @@ const props = defineProps({
 
         <!-- Основной контент -->
         <main class="flex-grow p-4">
-            <div class="w-full max-w-3xl mx-auto text-center p-4">
-                <h1 class="text-text-color text-2xl font-bold mb-4">Smart people make money here</h1>
+            <div class="w-full max-w-xl mx-auto p-4">
+                <h1 class="text-center text-2xl font-bold mb-4">Smart people make money here</h1>
                 <SearchBar/>
             </div>
         </main>

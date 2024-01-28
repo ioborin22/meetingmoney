@@ -3,7 +3,8 @@
 @tailwind utilities;
 
 body {
-    background-color: #F6F4FA;
+    background-color: #F4F4FA;
+    color: #232330; /* Задаём дефолтный цвет текста */
 }
 
 [x-cloak] {
