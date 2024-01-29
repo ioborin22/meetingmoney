@@ -40,7 +40,7 @@ const props = defineProps({
                 <!-- Логотип и навигация -->
                 <div class="flex justify-between items-center">
                     <div class="text-center tight-spacing">
-                        <h2 class="text-lg sm:text-xl font-medium">MeetingMoney</h2>
+                        <h2 class="text-lg sm:text-xl font-black">MeetingMoney</h2>
                         <span class="text-xs sm:text-sm">profit conversations</span>
                     </div>
 
