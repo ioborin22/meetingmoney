@@ -7,6 +7,11 @@ body {
     color: #232330; /* Задаём дефолтный цвет текста */
 }
 
+.tight-spacing h2 {
+    margin-bottom: -8px;
+    line-height: 1.1; /* Уменьшаем высоту строки */
+}
+
 [x-cloak] {
     display: none;
 }
